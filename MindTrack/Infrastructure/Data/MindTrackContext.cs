@@ -10,7 +10,19 @@ namespace MindTrack.Infrastructure.Data
         { }
 
         public DbSet<User> User { get; set; }
+        public DbSet<Meta> Meta { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Metas)
+                .WithOne(m => m.User)
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            base.OnModelCreating(modelBuilder);
+        }
 
     }
 }

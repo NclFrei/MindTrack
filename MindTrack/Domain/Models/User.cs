@@ -8,6 +8,9 @@ public class User
     public string Password { get; set; } = string.Empty;
     public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
 
+
+    public ICollection<Meta>? Metas { get; set; }
+
     public void SetPassword(string password)
     {
         Password = BCrypt.Net.BCrypt.HashPassword(password);
