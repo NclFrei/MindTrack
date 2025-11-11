@@ -1,0 +1,6 @@
+@MindTrack_HostAddress = http://localhost:5118
+
+GET {{MindTrack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
