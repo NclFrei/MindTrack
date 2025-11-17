@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MindTrack.Migrations
 {
     /// <inheritdoc />
-    public partial class AddUserAndMetas : Migration
+    public partial class CreatedMetasAndUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,7 @@ namespace MindTrack.Migrations
                     Id = table.Column<int>(type: "NUMBER(10)", nullable: false)
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     Titulo = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    Descricao = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    Descricao = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     DataInicio = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true),
                     DataFim = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true),
                     Concluida = table.Column<int>(type: "NUMBER(10)", nullable: false),

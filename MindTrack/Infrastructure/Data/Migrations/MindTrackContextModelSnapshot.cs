@@ -40,7 +40,6 @@ namespace MindTrack.Migrations
                         .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Descricao")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Titulo")

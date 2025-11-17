@@ -15,6 +15,13 @@ public class MetaProfile : Profile
         // Models -> Responses
         CreateMap<Meta, MetaResponse>();
 
+        CreateMap<AtualizarMetaRequest, Meta>()
+           .ForAllMembers(opt =>
+               opt.Condition((src, dest, srcMember) =>
+                   srcMember != null &&
+                   !(srcMember is string str && string.IsNullOrWhiteSpace(str))
+               ));
+
     }
 }
 

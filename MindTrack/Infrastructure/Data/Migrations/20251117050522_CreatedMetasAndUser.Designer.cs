@@ -12,8 +12,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace MindTrack.Migrations
 {
     [DbContext(typeof(MindTrackContext))]
-    [Migration("20251111071617_AddUserAndMetas")]
-    partial class AddUserAndMetas
+    [Migration("20251117050522_CreatedMetasAndUser")]
+    partial class CreatedMetasAndUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,7 +43,6 @@ namespace MindTrack.Migrations
                         .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Descricao")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Titulo")

@@ -9,4 +9,6 @@ public class MetaCreateRequest
     public DateTime? DataInicio { get; set; }
     public DateTime? DataFim { get; set; }
 
+    public int UserId { get; set; }
+
 }
