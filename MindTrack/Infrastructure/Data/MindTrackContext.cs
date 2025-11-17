@@ -10,7 +10,7 @@ namespace MindTrack.Infrastructure.Data
         { }
 
         public DbSet<User> User { get; set; }
-        public DbSet<Meta> Meta { get; set; }
+        public DbSet<Meta> Metas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,13 @@ namespace MindTrack.Infrastructure.Data
                 .WithOne(m => m.User)
                 .HasForeignKey(m => m.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Meta>()
+                .Property(m => m.Concluida)
+                .HasConversion(
+                    v => v ? 1 : 0,  // C# → Oracle
+                    v => v == 1      // Oracle → C#
+    );
 
             base.OnModelCreating(modelBuilder);
         }

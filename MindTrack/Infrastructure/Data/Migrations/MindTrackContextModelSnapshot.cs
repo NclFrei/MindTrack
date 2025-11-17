@@ -8,7 +8,7 @@ using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace MindTrack.Data.Migrations
+namespace MindTrack.Migrations
 {
     [DbContext(typeof(MindTrackContext))]
     partial class MindTrackContextModelSnapshot : ModelSnapshot
@@ -30,8 +30,8 @@ namespace MindTrack.Data.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Concluida")
-                        .HasColumnType("BOOLEAN");
+                    b.Property<int>("Concluida")
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime?>("DataFim")
                         .HasColumnType("TIMESTAMP(7)");
@@ -54,7 +54,7 @@ namespace MindTrack.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Meta");
+                    b.ToTable("Metas");
                 });
 
             modelBuilder.Entity("MindTrack.Domain.Models.User", b =>

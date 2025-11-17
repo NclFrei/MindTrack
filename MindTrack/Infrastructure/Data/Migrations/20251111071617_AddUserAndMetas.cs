@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace MindTrack.Data.Migrations
+namespace MindTrack.Migrations
 {
     /// <inheritdoc />
     public partial class AddUserAndMetas : Migration
@@ -28,7 +28,7 @@ namespace MindTrack.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Meta",
+                name: "Metas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "NUMBER(10)", nullable: false)
@@ -37,14 +37,14 @@ namespace MindTrack.Data.Migrations
                     Descricao = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     DataInicio = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true),
                     DataFim = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true),
-                    Concluida = table.Column<bool>(type: "BOOLEAN", nullable: false),
+                    Concluida = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     UserId = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Meta", x => x.Id);
+                    table.PrimaryKey("PK_Metas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Meta_User_UserId",
+                        name: "FK_Metas_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -52,8 +52,8 @@ namespace MindTrack.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Meta_UserId",
-                table: "Meta",
+                name: "IX_Metas_UserId",
+                table: "Metas",
                 column: "UserId");
         }
 
@@ -61,7 +61,7 @@ namespace MindTrack.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Meta");
+                name: "Metas");
 
             migrationBuilder.DropTable(
                 name: "User");

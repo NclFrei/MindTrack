@@ -9,6 +9,7 @@ public class User
     public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
 
 
+    // Relação
     public ICollection<Meta>? Metas { get; set; }
 
     public void SetPassword(string password)
