@@ -39,5 +39,33 @@ public class MetaService
         return _mapper.Map<MetaResponse>(created);
     }
 
- 
+    public async Task<List<MetaResponse>> GetAllAsync()
+    {
+        var metas = await _repository.GetAllAsync();
+        return _mapper.Map<List<MetaResponse>>(metas);
+    }
+
+    public async Task<MetaResponse?> GetByIdAsync(int id)
+    {
+        var area = await _repository.GetByIdAsync(id);
+        return area == null ? null : _mapper.Map<MetaResponse>(area);
+    }
+
+    public async Task<MetaResponse?> UpdateAsync(int id, AtualizarMetaRequest request)
+    {
+        var existingArea = await _repository.GetByIdAsync(id);
+        if (existingArea == null) return null;
+
+        _mapper.Map(request, existingArea);
+
+        var updated = await _repository.UpdateAsync(existingArea);
+        return _mapper.Map<MetaResponse>(updated);
+    }
+
+  
+    public async Task<bool> DeleteAsync(int id)
+    {
+        return await _repository.DeleteAsync(id);
+    }
+
 }
