@@ -14,6 +14,10 @@ public class User
     // Relação
     public ICollection<Meta>? Metas { get; set; }
 
+    // Health relations (MVP)
+    public ICollection<HeartMetric>? HeartMetrics { get; set; }
+    public ICollection<StressScore>? StressScores { get; set; }
+
     public void SetPassword(string password)
     {
         Password = BCrypt.Net.BCrypt.HashPassword(password);

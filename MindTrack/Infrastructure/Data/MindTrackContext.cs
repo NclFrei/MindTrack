@@ -12,6 +12,8 @@ namespace MindTrack.Infrastructure.Data
         public DbSet<User> User { get; set; }
         public DbSet<Meta> Metas { get; set; }
         public DbSet<Tarefa> Tarefas { get; set; }
+        public DbSet<HeartMetric> HeartMetrics { get; set; }
+        public DbSet<StressScore> StressScores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,27 @@ namespace MindTrack.Infrastructure.Data
                 .WithOne(t => t.User)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.HeartMetrics)
+                .WithOne(h => h.User)
+                .HasForeignKey(h => h.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.StressScores)
+                .WithOne(s => s.User)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<StressScore>()
+                .HasOne(s => s.SourceMetric)
+                .WithMany()
+                .HasForeignKey(s => s.SourceMetricId)
+                .OnDelete(DeleteBehavior.SetNull);
 
 
             base.OnModelCreating(modelBuilder);

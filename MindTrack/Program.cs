@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // DATABASE
 builder.Services.AddDbContext<MindTrackContext>(options =>
-    options.UseOracle(builder.Configuration.GetConnectionString("OracleConnection")));
+ options.UseOracle(builder.Configuration.GetConnectionString("OracleConnection")));
 
 // JWT SETTINGS
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWTSettings"));
@@ -33,6 +33,7 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddMaps(typeof(MetaProfile).Assembly);
     cfg.AddMaps(typeof(UserProfile).Assembly);
     cfg.AddMaps(typeof(TarefaProfile).Assembly);
+    cfg.AddMaps(typeof(HealthProfile).Assembly);
 });
 
 // Services + Repositories
@@ -46,6 +47,12 @@ builder.Services.AddScoped<IJwtSettingsProvider, JwtSettingsProvider>();
 builder.Services.AddScoped<IMetaRepository, MetaRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
+
+// Health (MVP)
+builder.Services.AddScoped<StressService>();
+builder.Services.AddScoped<HeartMetricService>();
+builder.Services.AddScoped<IHeartMetricRepository, HeartMetricRepository>();
+builder.Services.AddScoped<IStressRepository, StressRepository>();
 
 // Validators
 builder.Services.AddScoped<IValidator<MetaCreateRequest>, MetaCreateRequestValidator>();
@@ -70,15 +77,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 // CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
         builder.AllowAnyOrigin()
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+     .AllowAnyHeader()
+     .AllowAnyMethod();
     });
 });
 
@@ -88,8 +94,8 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
     options.ApiVersionReader = ApiVersionReader.Combine(
-        new UrlSegmentApiVersionReader(),
-        new HeaderApiVersionReader("X-Api-Version")
+    new UrlSegmentApiVersionReader(),
+    new HeaderApiVersionReader("X-Api-Version")
     );
 })
 .AddApiExplorer(options =>
@@ -104,7 +110,6 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MottuChallenge API", Version = "v1" });
     c.SwaggerDoc("v2", new OpenApiInfo { Title = "MottuChallenge API", Version = "v2" });
 
-    // JWT no Swagger
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         Scheme = "bearer",
@@ -122,24 +127,19 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { jwtSecurityScheme, Array.Empty<string>() }
-    });
+ {
+ { jwtSecurityScheme, Array.Empty<string>() }
+ });
 });
-
-
 
 builder.Services.AddControllers();
 
 // Health Check
 builder.Services.AddHealthChecks()
-    .AddCheck("self", () => HealthCheckResult.Healthy())
-    .AddDbContextCheck<MindTrackContext>("database");
+ .AddCheck("self", () => HealthCheckResult.Healthy())
+ .AddDbContextCheck<MindTrackContext>("database");
 
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -155,24 +155,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseCors("AllowAll");
-
 app.UseHttpsRedirection();
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHealthChecks("/health")
-   .WithTags("Health");
-
+app.MapHealthChecks("/health").WithTags("Health");
 
 app.MapHealthChecks("/health/details", new HealthCheckOptions
 {
@@ -193,7 +181,6 @@ app.MapHealthChecks("/health/details", new HealthCheckOptions
         await context.Response.WriteAsync(result);
     }
 }).WithTags("Health");
-
 
 app.MapControllers();
 

@@ -52,7 +52,6 @@ public class TokenService
 
         if (user == null)
         {
-            // cannot log here because static method lacks logger; throw to surface issue
             throw new ArgumentNullException(nameof(user));
         }
 
