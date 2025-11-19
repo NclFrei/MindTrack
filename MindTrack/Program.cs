@@ -38,6 +38,7 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddScoped<MetaService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddScoped<IJwtSettingsProvider, JwtSettingsProvider>();
 builder.Services.AddScoped<IMetaRepository, MetaRepository>();
