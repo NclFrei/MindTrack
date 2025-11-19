@@ -15,7 +15,15 @@ public class UserProfile : Profile
         // Retorno de usuário
         CreateMap<User, UserResponse>();
 
-
+        CreateMap<AtualizarUserRequest, User>()
+            .ForAllMembers(opt =>
+                opt.Condition((src, dest, srcMember) =>
+                    srcMember != null &&
+                    !(srcMember is string str && string.IsNullOrWhiteSpace(str))
+                ));
     }
+
+
+}
 
 }
