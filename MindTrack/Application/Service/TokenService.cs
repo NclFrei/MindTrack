@@ -5,20 +5,25 @@ using MindTrack.Infrastructure.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MindTrack.Application.Service;
 
 public class TokenService
 {
     private readonly IJwtSettingsProvider _jwtSettingsProvider;
+    private readonly ILogger<TokenService> _logger;
 
-    public TokenService(IJwtSettingsProvider jwtSettingsProvider)
+    public TokenService(IJwtSettingsProvider jwtSettingsProvider, ILogger<TokenService>? logger = null)
     {
         _jwtSettingsProvider = jwtSettingsProvider;
+        _logger = logger ?? NullLogger<TokenService>.Instance;
     }
 
     public string Generate(User usuario)
     {
+        _logger.LogInformation("Gerando JWT para usuário id {UserId} email {Email}", usuario?.Id, usuario?.Email);
         var handler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_jwtSettingsProvider.SecretKey);
 
@@ -35,14 +40,21 @@ public class TokenService
         };
 
         var token = handler.CreateToken(tokenDescriptor);
-
-        return handler.WriteToken(token);
+        var written = handler.WriteToken(token);
+        _logger.LogInformation("JWT gerado para usuário id {UserId}", usuario?.Id);
+        return written;
     }
 
 
     public static ClaimsIdentity GenerateClaims(User user)
     {
         var ci = new ClaimsIdentity();
+
+        if (user == null)
+        {
+            // cannot log here because static method lacks logger; throw to surface issue
+            throw new ArgumentNullException(nameof(user));
+        }
 
         ci.AddClaim(
             new Claim(ClaimTypes.Name, user.Email));
