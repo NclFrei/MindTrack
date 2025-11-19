@@ -13,5 +13,7 @@ public class Meta
     public int UserId { get; set; }
     public User? User { get; set; }
 
+    // Relação com tarefas
+    public ICollection<Tarefa>? Tarefas { get; set; } = new List<Tarefa>();
 
 }

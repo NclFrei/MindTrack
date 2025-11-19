@@ -32,6 +32,7 @@ builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddMaps(typeof(MetaProfile).Assembly);
     cfg.AddMaps(typeof(UserProfile).Assembly);
+    cfg.AddMaps(typeof(TarefaProfile).Assembly);
 });
 
 // Services + Repositories
@@ -39,14 +40,17 @@ builder.Services.AddScoped<MetaService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<TarefaService>();
 
 builder.Services.AddScoped<IJwtSettingsProvider, JwtSettingsProvider>();
 builder.Services.AddScoped<IMetaRepository, MetaRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
 
 // Validators
 builder.Services.AddScoped<IValidator<MetaCreateRequest>, MetaCreateRequestValidator>();
 builder.Services.AddScoped<IValidator<UserCreateRequest>, UserCreateRequestValidator>();
+builder.Services.AddScoped<IValidator<TarefaCreateRequest>, TarefaCreateRequestValidator>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindTrack.Infrastructure.Data;
 using Oracle.EntityFrameworkCore.Metadata;
@@ -11,9 +12,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace MindTrack.Migrations
 {
     [DbContext(typeof(MindTrackContext))]
-    partial class MindTrackContextModelSnapshot : ModelSnapshot
+    [Migration("20251119040922_AddTarefas")]
+    partial class AddTarefas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,7 +142,7 @@ namespace MindTrack.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("MindTrack.Domain.Models.User", "User")
-                        .WithMany("Tarefas")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -157,8 +160,6 @@ namespace MindTrack.Migrations
             modelBuilder.Entity("MindTrack.Domain.Models.User", b =>
                 {
                     b.Navigation("Metas");
-
-                    b.Navigation("Tarefas");
                 });
 #pragma warning restore 612, 618
         }

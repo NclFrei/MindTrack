@@ -9,6 +9,8 @@ public class User
     public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
 
 
+    public ICollection<Tarefa>? Tarefas { get; set; }
+
     // Relação
     public ICollection<Meta>? Metas { get; set; }
 

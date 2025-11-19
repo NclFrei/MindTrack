@@ -9,7 +9,7 @@ using MindTrack.Domain.DTOs.Response;
 namespace MindTrack.Controllers.V1
 {
     [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
     public class MetaController : ControllerBase
