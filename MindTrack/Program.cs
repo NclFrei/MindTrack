@@ -107,9 +107,26 @@ builder.Services.AddApiVersioning(options =>
 // Swagger com Versionamento
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MottuChallenge API", Version = "v1" });
-    c.SwaggerDoc("v2", new OpenApiInfo { Title = "MottuChallenge API", Version = "v2" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "MindTrack API",
+        Version = "v1",
+        Description = "API para gerenciamento de metas, tarefas e métricas de saúde (MindTrack)."
+    });
 
+    c.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Title = "MindTrack API",
+        Version = "v2",
+        Description = "Versão 2 da API MindTrack."
+    });
+
+    // Importa XML do projeto
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
+    // JWT
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         Scheme = "bearer",
@@ -117,7 +134,7 @@ builder.Services.AddSwaggerGen(c =>
         Name = "JWT Authentication",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Description = "Insira o token JWT válido abaixo",
+        Description = "Insira um token JWT válido",
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
@@ -127,9 +144,9 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
- {
- { jwtSecurityScheme, Array.Empty<string>() }
- });
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
 });
 
 builder.Services.AddControllers();
