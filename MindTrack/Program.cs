@@ -43,6 +43,9 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TarefaService>();
 
+// Register V2 services
+builder.Services.AddScoped<MindTrack.Application.Service.V2.TaskOrganizerService>();
+
 builder.Services.AddScoped<IJwtSettingsProvider, JwtSettingsProvider>();
 builder.Services.AddScoped<IMetaRepository, MetaRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

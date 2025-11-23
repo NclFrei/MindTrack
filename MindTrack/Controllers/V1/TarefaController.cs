@@ -48,14 +48,13 @@ public class TarefaController : ControllerBase
         [FromQuery] int? metaId = null,
         [FromQuery] int? userId = null,
         [FromQuery] int? prioridade = null,
-        [FromQuery] DificuldadeEnum? dificuldade = null,
-        [FromQuery] string? tituloContains = null)
+        [FromQuery] DificuldadeEnum? dificuldade = null)
     {
-        var result = await _service.GetAllAsync(page, pageSize, metaId, userId, prioridade, dificuldade, tituloContains);
-        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "first", Method = "GET" });
-        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.TotalPages, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "last", Method = "GET" });
-        if (result.Page > 1) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page - 1, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "prev", Method = "GET" });
-        if (result.Page < result.TotalPages) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page + 1, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "next", Method = "GET" });
+        var result = await _service.GetAllAsync(page, pageSize, metaId, userId, prioridade, dificuldade);
+        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize, metaId, userId, prioridade, dificuldade }), Rel = "first", Method = "GET" });
+        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.TotalPages, pageSize, metaId, userId, prioridade, dificuldade }), Rel = "last", Method = "GET" });
+        if (result.Page > 1) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page - 1, pageSize, metaId, userId, prioridade, dificuldade }), Rel = "prev", Method = "GET" });
+        if (result.Page < result.TotalPages) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page + 1, pageSize, metaId, userId, prioridade, dificuldade }), Rel = "next", Method = "GET" });
         return Ok(result);
     }
 

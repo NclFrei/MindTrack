@@ -45,7 +45,7 @@ public class TarefaService
  return _mapper.Map<TarefaResponse>(created);
  }
 
- public async Task<PagedResult<TarefaResponse>> GetAllAsync(int page =1, int pageSize =10, int? metaId = null, int? userId = null, int? prioridade = null, DificuldadeEnum? dificuldade = null, string? tituloContains = null)
+ public async Task<PagedResult<TarefaResponse>> GetAllAsync(int page =1, int pageSize =10, int? metaId = null, int? userId = null, int? prioridade = null, DificuldadeEnum? dificuldade = null)
  {
  _logger.LogInformation("Retornando tarefas paginação: página {Page} tamanho {PageSize}", page, pageSize);
  var tarefas = await _repository.GetAllAsync();
@@ -58,8 +58,6 @@ public class TarefaService
  tarefas = tarefas.Where(t => t.Prioridade == prioridade.Value).ToList();
  if (dificuldade.HasValue)
  tarefas = tarefas.Where(t => t.Dificuldade == dificuldade.Value).ToList();
- if (!string.IsNullOrWhiteSpace(tituloContains))
- tarefas = tarefas.Where(t => t.Titulo != null && t.Titulo.Contains(tituloContains, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
  var total = tarefas.Count;
  var totalPages = (int)Math.Ceiling(total / (double)pageSize);

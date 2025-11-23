@@ -59,8 +59,6 @@ namespace MindTrack.Application.Service
                 users = users.Where(u => u.DataCriacao >= createdFrom.Value).ToList();
             if (createdTo.HasValue)
                 users = users.Where(u => u.DataCriacao <= createdTo.Value).ToList();
-            if (!string.IsNullOrWhiteSpace(nomeContains))
-                users = users.Where(u => u.Nome != null && u.Nome.Contains(nomeContains, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
             var total = users.Count;
             var totalPages = (int)Math.Ceiling(total / (double)pageSize);

@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MindTrack.Application.Service;
 using MindTrack.Domain.DTOs.Request;
@@ -75,16 +74,15 @@ public class UserController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] DateTime? createdFrom = null,
-        [FromQuery] DateTime? createdTo = null,
-        [FromQuery] string? nomeContains = null)
+        [FromQuery] DateTime? createdTo = null)
     {
-        var response = await _usuarioService.GetAllUsersAsync(page, pageSize);
-        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize, createdFrom, createdTo, nomeContains }), Rel = "first", Method = "GET" });
-        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.TotalPages, pageSize, createdFrom, createdTo, nomeContains }), Rel = "last", Method = "GET" });
+        var response = await _usuarioService.GetAllUsersAsync(page, pageSize, createdFrom, createdTo);
+        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize, createdFrom, createdTo }), Rel = "first", Method = "GET" });
+        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.TotalPages, pageSize, createdFrom, createdTo }), Rel = "last", Method = "GET" });
         if (response.Page > 1)
-            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page - 1, pageSize, createdFrom, createdTo, nomeContains }), Rel = "prev", Method = "GET" });
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page - 1, pageSize, createdFrom, createdTo }), Rel = "prev", Method = "GET" });
         if (response.Page < response.TotalPages)
-            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize, createdFrom, createdTo, nomeContains }), Rel = "next", Method = "GET" });
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize, createdFrom, createdTo }), Rel = "next", Method = "GET" });
 
         return Ok(response);
     }
