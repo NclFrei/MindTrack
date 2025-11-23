@@ -123,7 +123,7 @@ namespace MindTrack.Controllers.V1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<MetaResponse>> PatchArea(int id, [FromBody] AtualizarMetaRequest request)
+        public async Task<ActionResult<MetaResponse>> PatchMeta(int id, [FromBody] AtualizarMetaRequest request)
         {
             if (request == null)
                 return BadRequest("Request inválido.");

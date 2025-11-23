@@ -84,7 +84,7 @@ public class UserController : ControllerBase
         if (response.Page < response.TotalPages)
             response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize, createdFrom, createdTo }), Rel = "next", Method = "GET" });
 
-        return Ok(response);
+        return Ok(response);    
     }
 
     /// <summary>
