@@ -1,0 +1,89 @@
+﻿trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  packageFolder: '$(Build.ArtifactStagingDirectory)'
+  azureSubscription: 'Rm_554921(1)(a44e19b8-3c1f-4bb4-bebe-166537a53a5e)'
+  appServiceName: 'MoodAppService'
+
+stages:
+
+# 1️ BUILD
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Install .NET 8 SDK'
+      inputs:
+        packageType: 'sdk'
+        version: '8.0.x'
+
+    - script: dotnet restore
+      displayName: 'Restore'
+
+    - script: dotnet build --configuration $(buildConfiguration) --no-restore
+      displayName: 'Build'
+
+# 2️ TESTS
+- stage: Test
+  displayName: 'Test Stage'
+  dependsOn: Build
+  jobs:
+  - job: TestJob
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '8.0.x'
+
+    - script: dotnet test --configuration $(buildConfiguration) --logger trx
+      displayName: 'Run Tests'
+
+# 3️ PUBLISH
+- stage: Publish
+  displayName: 'Publish Stage'
+  dependsOn: Test
+  jobs:
+  - job: PublishJob
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish'
+      inputs:
+        command: publish
+        publishWebProjects: true
+        arguments: '--configuration $(buildConfiguration) --output $(packageFolder)'
+        zipAfterPublish: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publicar artefatos'
+      inputs:
+        pathToPublish: '$(packageFolder)'
+        artifactName: 'drop'
+
+# 4️ DEPLOY PARA PROD
+- stage: Deploy
+  displayName: 'Deploy Stage'
+  dependsOn: Publish
+  jobs:
+  - job: DeployJob
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Download Artifacts'
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(Pipeline.Workspace)'
+
+    - task: AzureWebApp@1
+      displayName: 'Deploy to App Service'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        appName: $(appServiceName)
+        package: '$(Pipeline.Workspace)/drop/**/*.zip'
