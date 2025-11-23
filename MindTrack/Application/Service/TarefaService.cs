@@ -44,12 +44,27 @@ public class TarefaService
  return _mapper.Map<TarefaResponse>(created);
  }
 
- public async Task<List<TarefaResponse>> GetAllAsync()
+ public async Task<PagedResult<TarefaResponse>> GetAllAsync(int page =1, int pageSize =10, Func<Tarefa, bool>? predicate = null)
  {
- _logger.LogInformation("Retornando todas as tarefas");
+ _logger.LogInformation("Retornando tarefas paginação: página {Page} tamanho {PageSize}", page, pageSize);
  var tarefas = await _repository.GetAllAsync();
- _logger.LogInformation("Recuperadas {Count} tarefas", tarefas?.Count ??0);
- return _mapper.Map<List<TarefaResponse>>(tarefas);
+ if (predicate != null)
+ tarefas = tarefas.Where(predicate).ToList();
+
+ var total = tarefas.Count;
+ var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+ var items = tarefas.Skip((page -1) * pageSize).Take(pageSize).ToList();
+
+ var result = new PagedResult<TarefaResponse>
+ {
+ Items = _mapper.Map<List<TarefaResponse>>(items),
+ Page = page,
+ PageSize = pageSize,
+ TotalCount = total,
+ TotalPages = totalPages
+ };
+
+ return result;
  }
 
  public async Task<TarefaResponse?> GetByIdAsync(int id)

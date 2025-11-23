@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MindTrack.Application.Service;
 using MindTrack.Domain.DTOs.Request;
+using MindTrack.Domain.DTOs.Response;
 
 namespace MindTrack.Controllers.V1;
 
@@ -39,9 +40,13 @@ public class TarefaController : ControllerBase
  /// </summary>
  /// <returns>Lista de tarefas</returns>
  [HttpGet]
- public async Task<IActionResult> GetAll()
+ public async Task<IActionResult> GetAll([FromQuery] int page =1, [FromQuery] int pageSize =10)
  {
- var result = await _service.GetAllAsync();
+ var result = await _service.GetAllAsync(page, pageSize);
+ result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page =1, pageSize }), Rel = "first", Method = "GET"});
+ result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.TotalPages, pageSize }), Rel = "last", Method = "GET"});
+ if (result.Page >1) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page -1, pageSize }), Rel = "prev", Method = "GET"});
+ if (result.Page < result.TotalPages) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page +1, pageSize }), Rel = "next", Method = "GET"});
  return Ok(result);
  }
 

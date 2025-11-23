@@ -47,12 +47,27 @@ public class MetaService
         return _mapper.Map<MetaResponse>(created);
     }
 
-    public async Task<List<MetaResponse>> GetAllAsync()
+    public async Task<PagedResult<MetaResponse>> GetAllAsync(int page =1, int pageSize =10, Func<Meta, bool>? predicate = null)
     {
-        _logger.LogInformation("Retornando todas as metas");
+        _logger.LogInformation("Retornando metas paginação: página {Page} tamanho {PageSize}", page, pageSize);
         var metas = await _repository.GetAllAsync();
-        _logger.LogInformation("Recuperadas {Count} metas", metas?.Count ??0);
-        return _mapper.Map<List<MetaResponse>>(metas);
+        if (predicate != null)
+        metas = metas.Where(predicate).ToList();
+
+        var total = metas.Count;
+        var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+        var items = metas.Skip((page -1) * pageSize).Take(pageSize).ToList();
+
+        var result = new PagedResult<MetaResponse>
+        {
+            Items = _mapper.Map<List<MetaResponse>>(items),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = total,
+            TotalPages = totalPages
+        };
+
+        return result;
     }
 
     public async Task<MetaResponse?> GetByIdAsync(int id)

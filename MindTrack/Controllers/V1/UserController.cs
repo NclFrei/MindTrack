@@ -67,12 +67,19 @@ public class UserController : ControllerBase
     /// </summary>
     /// <returns>Lista de usuários</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserResponse>> GetAll()
+    public async Task<ActionResult<PagedResult<UserResponse>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var response = await _usuarioService.GetAllUsersAsync();
+        var response = await _usuarioService.GetAllUsersAsync(page, pageSize);
+        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize }), Rel = "first", Method = "GET" });
+        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.TotalPages, pageSize }), Rel = "last", Method = "GET" });
+        if (response.Page > 1)
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page - 1, pageSize }), Rel = "prev", Method = "GET" });
+        if (response.Page < response.TotalPages)
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize }), Rel = "next", Method = "GET" });
+
         return Ok(response);
     }
 

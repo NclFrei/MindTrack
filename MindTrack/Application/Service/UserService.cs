@@ -50,12 +50,25 @@ namespace MindTrack.Application.Service
             return result;
         }
 
-        public async Task<List<UserResponse>>GetAllUsersAsync()
+        public async Task<PagedResult<UserResponse>> GetAllUsersAsync(int page = 1, int pageSize = 10)
         {
-            _logger.LogInformation("Obtendo todos os usuários");
+            _logger.LogInformation("Obtendo usuários paginação: página {Page} tamanho {PageSize}", page, pageSize);
             var users = await _userRepository.GetAllAsync();
-            _logger.LogInformation("Recuperados {Count} usuários", users?.Count ??0);
-            return _mapper.Map<List<UserResponse>>(users);
+
+            var total = users.Count;
+            var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+            var items = users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var result = new PagedResult<UserResponse>
+            {
+                Items = _mapper.Map<List<UserResponse>>(items),
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = total,
+                TotalPages = totalPages
+            };
+
+            return result;
         }
 
         public async Task<UserResponse> AtualizarPerfilAsync(int id, AtualizarUserRequest request)
