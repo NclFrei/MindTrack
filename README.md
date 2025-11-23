@@ -1,14 +1,18 @@
-#  MindTrack — Gerenciador Inteligente Baseado em Estresse
+#  Mood — Gerenciador Inteligente Baseado em Estresse
 
-API RESTful construída em .NET8 para gerenciamento de usuários, metas, tarefas e métricas de bem-estar (batimentos cardíacos, HRV, sono e Stress Score). A API serve como back-end da plataforma MindTrack, que combina biometria + IA para reorganizar automaticamente a agenda do usuário de acordo com seu nível de estresse.
+API RESTful construída em .NET 8 para gerenciamento de usuários, metas, tarefas e métricas fisiológicas (frequência cardíaca, HRV, sono e Stress Score).
+A API serve como back-end da plataforma Mood, que combina biometria + IA para reorganizar automaticamente a agenda do usuário de acordo com seu nível de estresse.
 
 ##  Visão Geral do Projeto
 
-O MindTrack é um sistema que utiliza dados fisiológicos do usuário para identificar seu nível de estresse e reorganizar sua rotina de forma inteligente.
+O Mood ajuda usuários a terem dias mais equilibrados, reorganizando tarefas flexíveis quando o estresse estiver alto e preservando compromissos importantes.
 
 ##  Objetivo
 
-Ajudar o usuário a ter dias mais equilibrados, reorganizando tarefas flexíveis quando o estresse estiver alto, preservando compromissos importantes.
+- Reduzir sobrecarga mental
+- Melhorar produtividade sem sacrificar a saúde
+- Organizar rotinas baseadas no estado fisiológico real do usuário
+- Utilizar IA para reordenação inteligente de tarefas
 
 ##  Como funciona
 Coleta biométrica (via Health Connect):
@@ -53,11 +57,10 @@ Interface do app (mobile):
 - `Domain/Models` — entidades (`User`, `Meta`, `Tarefa`, `HeartMetric`, `StressScore`)
 - `Migrations` — histórico das migrations do EF Core
 
-##  Requisitos
+## Arquitetura
 
-- .NET8 SDK
-- Banco SQL Server (ou outro provedor configurado)
-- VS Code ou Visual Studio2022 (opcional)
+<img width="3132" height="1608" alt="image" src="https://github.com/user-attachments/assets/b66842b1-af9b-47c6-8720-b5976f0c65fa" />
+
 
 ##  Configuração
 
@@ -114,7 +117,7 @@ Aplicar migration:
 
 ##  Documentação Swagger
 
-- UI: `/swagger`
+- UI: `/`
 - Documentos: `/swagger/v1/swagger.json` e `/swagger/v2/swagger.json`
 - Configuração para enviar JWT via Header `Authorization: Bearer {token}`
 - Versionamento ativo (URL + header)
@@ -160,20 +163,4 @@ CRUDs principais
 - `User` → `StressScores` (Restrict)
 - `StressScore` → `HeartMetric` (FK opcional)
 
-##  Boas Práticas para Produção
 
-- Use HTTPS + CORS restritivo
-- Proteja chaves e conexões (Key Vault / secrets)
-- Configure logs estruturados
-- Habilite validação completa do JWT (Issuer/Audience)
-- Implemente refresh tokens (roadmap futuro)
-- Considere APM (Application Insights)
-
-##  Contribuição
-
-- Abra issues com bugs ou sugestões
-- Envie PRs seguindo convenções do repositório
-- Rode migrations + testes antes de enviar
----
-
-Se quiser que eu gere algum dos itens acima, diga qual e eu preparo os arquivos correspondentes.
