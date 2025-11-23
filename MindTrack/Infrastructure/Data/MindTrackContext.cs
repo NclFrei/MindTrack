@@ -28,7 +28,7 @@ namespace MindTrack.Infrastructure.Data
                 .Property(m => m.Concluida)
                 .HasConversion(
                     v => v ? 1 : 0,  // C# → Oracle
-                    v => v == 1 );     // Oracle → C#
+                    v => v == 1);     // Oracle → C#
 
 
             modelBuilder.Entity<Meta>()
