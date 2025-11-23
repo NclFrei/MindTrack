@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MindTrack.Application.Service;
 using MindTrack.Domain.DTOs.Request;
@@ -47,7 +48,7 @@ public class UserController : ControllerBase
     /// Remove um usuário pelo identificador.
     /// </summary>
     /// <param name="id">Identificador do usuário a ser removido</param>
-    /// <returns>204 se excluído com sucesso ou404 se não encontrado</returns>
+    /// <returns>204 se excluído com sucesso ou 404 se não encontrado</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -84,7 +85,26 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Atualiza parcialmente o perfil do usuário.
+    /// Atualiza completamente o perfil do usuário (PUT).
+    /// </summary>
+    /// <param name="id">Identificador do usuário a ser atualizado</param>
+    /// <param name="request">Dados para atualização completa</param>
+    /// <returns>Usuário atualizado</returns>
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Put(int id, [FromBody] AtualizarUserRequest request)
+    {
+        if (request == null) return BadRequest();
+        var atualizado = await _usuarioService.AtualizarPerfilAsync(id, request);
+        return Ok(atualizado);
+    }
+
+    /// <summary>
+    /// Atualiza parcialmente o perfil do usuário (PATCH).
     /// </summary>
     /// <param name="id">Identificador do usuário a ser atualizado</param>
     /// <param name="request">Dados para atualização do perfil</param>
@@ -95,7 +115,6 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
     public async Task<IActionResult> AtualizarPerfil(int id, [FromBody] AtualizarUserRequest request)
     {
         var atualizado = await _usuarioService.AtualizarPerfilAsync(id, request);
