@@ -50,10 +50,17 @@ namespace MindTrack.Application.Service
             return result;
         }
 
-        public async Task<PagedResult<UserResponse>> GetAllUsersAsync(int page = 1, int pageSize = 10)
+        public async Task<PagedResult<UserResponse>> GetAllUsersAsync(int page = 1, int pageSize = 10, DateTime? createdFrom = null, DateTime? createdTo = null, string? nomeContains = null)
         {
             _logger.LogInformation("Obtendo usuários paginação: página {Page} tamanho {PageSize}", page, pageSize);
             var users = await _userRepository.GetAllAsync();
+
+            if (createdFrom.HasValue)
+                users = users.Where(u => u.DataCriacao >= createdFrom.Value).ToList();
+            if (createdTo.HasValue)
+                users = users.Where(u => u.DataCriacao <= createdTo.Value).ToList();
+            if (!string.IsNullOrWhiteSpace(nomeContains))
+                users = users.Where(u => u.Nome != null && u.Nome.Contains(nomeContains, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
             var total = users.Count;
             var totalPages = (int)Math.Ceiling(total / (double)pageSize);

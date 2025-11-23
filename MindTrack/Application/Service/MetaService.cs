@@ -47,12 +47,20 @@ public class MetaService
         return _mapper.Map<MetaResponse>(created);
     }
 
-    public async Task<PagedResult<MetaResponse>> GetAllAsync(int page =1, int pageSize =10, Func<Meta, bool>? predicate = null)
+    public async Task<PagedResult<MetaResponse>> GetAllAsync(int page =1, int pageSize =10, bool? concluida = null, int? userId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
     {
         _logger.LogInformation("Retornando metas paginação: página {Page} tamanho {PageSize}", page, pageSize);
         var metas = await _repository.GetAllAsync();
-        if (predicate != null)
-        metas = metas.Where(predicate).ToList();
+
+        // Aplicar filtros em memória (recomendado mover para repositório para grandes volumes)
+        if (concluida.HasValue)
+            metas = metas.Where(m => m.Concluida == concluida.Value).ToList();
+        if (userId.HasValue)
+            metas = metas.Where(m => m.UserId == userId.Value).ToList();
+        if (dataInicio.HasValue)
+            metas = metas.Where(m => m.DataInicio.HasValue && m.DataInicio.Value.Date >= dataInicio.Value.Date).ToList();
+        if (dataFim.HasValue)
+            metas = metas.Where(m => m.DataFim.HasValue && m.DataFim.Value.Date <= dataFim.Value.Date).ToList();
 
         var total = metas.Count;
         var totalPages = (int)Math.Ceiling(total / (double)pageSize);

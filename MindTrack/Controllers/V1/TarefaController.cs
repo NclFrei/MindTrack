@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MindTrack.Application.Service;
 using MindTrack.Domain.DTOs.Request;
 using MindTrack.Domain.DTOs.Response;
+using MindTrack.Domain.Enums;
 
 namespace MindTrack.Controllers.V1;
 
@@ -41,13 +42,20 @@ public class TarefaController : ControllerBase
     /// </summary>
     /// <returns>Lista de tarefas</returns>
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int? metaId = null,
+        [FromQuery] int? userId = null,
+        [FromQuery] int? prioridade = null,
+        [FromQuery] DificuldadeEnum? dificuldade = null,
+        [FromQuery] string? tituloContains = null)
     {
-        var result = await _service.GetAllAsync(page, pageSize);
-        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize }), Rel = "first", Method = "GET" });
-        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.TotalPages, pageSize }), Rel = "last", Method = "GET" });
-        if (result.Page > 1) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page - 1, pageSize }), Rel = "prev", Method = "GET" });
-        if (result.Page < result.TotalPages) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page + 1, pageSize }), Rel = "next", Method = "GET" });
+        var result = await _service.GetAllAsync(page, pageSize, metaId, userId, prioridade, dificuldade, tituloContains);
+        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "first", Method = "GET" });
+        result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.TotalPages, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "last", Method = "GET" });
+        if (result.Page > 1) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page - 1, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "prev", Method = "GET" });
+        if (result.Page < result.TotalPages) result.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = result.Page + 1, pageSize, metaId, userId, prioridade, dificuldade, tituloContains }), Rel = "next", Method = "GET" });
         return Ok(result);
     }
 

@@ -48,16 +48,22 @@ namespace MindTrack.Controllers.V1
         [ProducesResponseType(typeof(PagedResult<MetaResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<PagedResult<MetaResponse>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<PagedResult<MetaResponse>>> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] bool? concluida = null,
+            [FromQuery] int? userId = null,
+            [FromQuery] DateTime? dataInicio = null,
+            [FromQuery] DateTime? dataFim = null)
         {
-            var response = await _service.GetAllAsync(page, pageSize);
-            // Adiciona links HATEOAS simples
-            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize }), Rel = "first", Method = "GET" });
-            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.TotalPages, pageSize }), Rel = "last", Method = "GET" });
+            var response = await _service.GetAllAsync(page, pageSize, concluida, userId, dataInicio, dataFim);
+            // Adiciona links HATEOAS simples, preservando filtros
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize, concluida, userId, dataInicio, dataFim }), Rel = "first", Method = "GET" });
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.TotalPages, pageSize, concluida, userId, dataInicio, dataFim }), Rel = "last", Method = "GET" });
             if (response.Page > 1)
-                response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page - 1, pageSize }), Rel = "prev", Method = "GET" });
+                response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page - 1, pageSize, concluida, userId, dataInicio, dataFim }), Rel = "prev", Method = "GET" });
             if (response.Page < response.TotalPages)
-                response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize }), Rel = "next", Method = "GET" });
+                response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize, concluida, userId, dataInicio, dataFim }), Rel = "next", Method = "GET" });
 
             return Ok(response);
         }

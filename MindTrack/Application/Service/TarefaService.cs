@@ -4,6 +4,7 @@ using MindTrack.Domain.DTOs.Request;
 using MindTrack.Domain.DTOs.Response;
 using MindTrack.Domain.Interfaces;
 using MindTrack.Domain.Models;
+using MindTrack.Domain.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -44,12 +45,21 @@ public class TarefaService
  return _mapper.Map<TarefaResponse>(created);
  }
 
- public async Task<PagedResult<TarefaResponse>> GetAllAsync(int page =1, int pageSize =10, Func<Tarefa, bool>? predicate = null)
+ public async Task<PagedResult<TarefaResponse>> GetAllAsync(int page =1, int pageSize =10, int? metaId = null, int? userId = null, int? prioridade = null, DificuldadeEnum? dificuldade = null, string? tituloContains = null)
  {
  _logger.LogInformation("Retornando tarefas paginação: página {Page} tamanho {PageSize}", page, pageSize);
  var tarefas = await _repository.GetAllAsync();
- if (predicate != null)
- tarefas = tarefas.Where(predicate).ToList();
+
+ if (metaId.HasValue)
+ tarefas = tarefas.Where(t => t.MetaId.HasValue && t.MetaId.Value == metaId.Value).ToList();
+ if (userId.HasValue)
+ tarefas = tarefas.Where(t => t.UserId == userId.Value).ToList();
+ if (prioridade.HasValue)
+ tarefas = tarefas.Where(t => t.Prioridade == prioridade.Value).ToList();
+ if (dificuldade.HasValue)
+ tarefas = tarefas.Where(t => t.Dificuldade == dificuldade.Value).ToList();
+ if (!string.IsNullOrWhiteSpace(tituloContains))
+ tarefas = tarefas.Where(t => t.Titulo != null && t.Titulo.Contains(tituloContains, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
  var total = tarefas.Count;
  var totalPages = (int)Math.Ceiling(total / (double)pageSize);

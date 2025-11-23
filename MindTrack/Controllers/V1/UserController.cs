@@ -48,7 +48,7 @@ public class UserController : ControllerBase
     /// Remove um usuário pelo identificador.
     /// </summary>
     /// <param name="id">Identificador do usuário a ser removido</param>
-    /// <returns>204 se excluído com sucesso ou 404 se não encontrado</returns>
+    /// <returns>204 se excluído com sucesso ou404 se não encontrado</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,15 +71,20 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(PagedResult<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<PagedResult<UserResponse>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<PagedResult<UserResponse>>> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] DateTime? createdFrom = null,
+        [FromQuery] DateTime? createdTo = null,
+        [FromQuery] string? nomeContains = null)
     {
         var response = await _usuarioService.GetAllUsersAsync(page, pageSize);
-        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize }), Rel = "first", Method = "GET" });
-        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.TotalPages, pageSize }), Rel = "last", Method = "GET" });
+        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = 1, pageSize, createdFrom, createdTo, nomeContains }), Rel = "first", Method = "GET" });
+        response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.TotalPages, pageSize, createdFrom, createdTo, nomeContains }), Rel = "last", Method = "GET" });
         if (response.Page > 1)
-            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page - 1, pageSize }), Rel = "prev", Method = "GET" });
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page - 1, pageSize, createdFrom, createdTo, nomeContains }), Rel = "prev", Method = "GET" });
         if (response.Page < response.TotalPages)
-            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize }), Rel = "next", Method = "GET" });
+            response.Links.Add(new Link { Href = Url.ActionLink(nameof(GetAll), values: new { page = response.Page + 1, pageSize, createdFrom, createdTo, nomeContains }), Rel = "next", Method = "GET" });
 
         return Ok(response);
     }
