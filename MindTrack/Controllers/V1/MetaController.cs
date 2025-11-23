@@ -8,6 +8,9 @@ using MindTrack.Domain.DTOs.Response;
 
 namespace MindTrack.Controllers.V1
 {
+    /// <summary>
+    /// Endpoints para gerenciamento de metas do usuário (criação, leitura, atualização e exclusão).
+    /// </summary>
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
@@ -21,6 +24,11 @@ namespace MindTrack.Controllers.V1
             _service = service;
         }
 
+        /// <summary>
+        /// Cria uma nova meta para o usuário autenticado.
+        /// </summary>
+        /// <param name="request">Dados da meta a ser criada</param>
+        /// <returns>Meta criada</returns>
         [HttpPost]
         [ProducesResponseType(typeof(MetaResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -32,6 +40,10 @@ namespace MindTrack.Controllers.V1
             return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
         }
 
+        /// <summary>
+        /// Recupera todas as metas do usuário autenticado.
+        /// </summary>
+        /// <returns>Lista de metas</returns>
         [HttpGet]
         [ProducesResponseType(typeof(MetaResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -42,7 +54,11 @@ namespace MindTrack.Controllers.V1
             return Ok(response);
         }
 
-
+        /// <summary>
+        /// Recupera uma meta específica pelo seu identificador.
+        /// </summary>
+        /// <param name="id">Identificador da meta</param>
+        /// <returns>Meta encontrada ou404 se não existir</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(MetaResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -57,7 +73,12 @@ namespace MindTrack.Controllers.V1
             return Ok(response);
         }
 
-
+        /// <summary>
+        /// Atualiza parcialmente uma meta existente.
+        /// </summary>
+        /// <param name="id">Identificador da meta a ser atualizada</param>
+        /// <param name="request">Dados para atualizar a meta</param>
+        /// <returns>Meta atualizada ou404 se não existir</returns>
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(MetaResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -76,7 +97,11 @@ namespace MindTrack.Controllers.V1
             return Ok(updated);
         }
 
-
+        /// <summary>
+        /// Remove uma meta existente.
+        /// </summary>
+        /// <param name="id">Identificador da meta a ser excluída</param>
+        /// <returns>204 se excluído com sucesso ou404 se não encontrado</returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

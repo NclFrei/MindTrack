@@ -8,6 +8,9 @@ using MindTrack.Erros;
 
 namespace MindTrack.Controllers.V1;
 
+/// <summary>
+/// Endpoints para gerenciamento de usuários (obter, listar, atualizar e remover).
+/// </summary>
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
@@ -21,6 +24,11 @@ public class UserController : ControllerBase
         _usuarioService = usuarioService;
     }
 
+    /// <summary>
+    /// Recupera um usuário pelo seu identificador.
+    /// </summary>
+    /// <param name="id">Identificador do usuário</param>
+    /// <returns>Informações do usuário</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -35,6 +43,11 @@ public class UserController : ControllerBase
         return Ok(usuario);
     }
 
+    /// <summary>
+    /// Remove um usuário pelo identificador.
+    /// </summary>
+    /// <param name="id">Identificador do usuário a ser removido</param>
+    /// <returns>204 se excluído com sucesso ou404 se não encontrado</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -49,6 +62,10 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Recupera todos os usuários.
+    /// </summary>
+    /// <returns>Lista de usuários</returns>
     [HttpGet]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -59,6 +76,12 @@ public class UserController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Atualiza parcialmente o perfil do usuário.
+    /// </summary>
+    /// <param name="id">Identificador do usuário a ser atualizado</param>
+    /// <param name="request">Dados para atualização do perfil</param>
+    /// <returns>Usuário atualizado</returns>
     [HttpPatch("{id}")]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -9,6 +9,9 @@ using MindTrack.Domain.Interfaces;
 
 namespace MindTrack.Controllers.V1;
 
+/// <summary>
+/// Endpoints relacionados a métricas de saúde e pontuações de estresse.
+/// </summary>
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
@@ -24,6 +27,11 @@ public class HealthController : ControllerBase
         _stressRepository = stressRepository;
     }
 
+    /// <summary>
+    /// Recebe métricas cardíacas e calcula/retorna a pontuação de estresse.
+    /// </summary>
+    /// <param name="request">Métrica cardíaca a ser ingerida</param>
+    /// <returns>Pontuação de estresse calculada</returns>
     [HttpPost("metrics")]
     [ProducesResponseType(typeof(StressScoreResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -35,6 +43,11 @@ public class HealthController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
+    /// <summary>
+    /// Recupera a pontuação de estresse por identificador.
+    /// </summary>
+    /// <param name="id">Identificador da pontuação de estresse</param>
+    /// <returns>Pontuação de estresse e identificador do usuário</returns>
     [HttpGet("scores/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>23a8e295-195b-4979-bba7-eaaf7e04edee</UserSecretsId>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <NoWarn>$(NoWarn);1591</NoWarn>
+
+	  <DocumentationFile>bin\$(Configuration)\net8.0\MindTrack.xml</DocumentationFile>
+
   </PropertyGroup>
 
   <ItemGroup>
