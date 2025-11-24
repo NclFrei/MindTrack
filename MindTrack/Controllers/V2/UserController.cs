@@ -22,8 +22,15 @@ public class UserController : ControllerBase
  _usuarioService = usuarioService;
  }
 
+ /// <summary>
+ /// Recupera um usuário pelo seu identificador.
+ /// </summary>
+ /// <param name="id">Identificador do usuário</param>
+ /// <returns>Informações do usuário</returns>
  [HttpGet("{id}")]
  [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<ActionResult<UserResponse>> ObterUsuario(int id)
  {
  var usuario = await _usuarioService.GetUserByIdAsync(id);
@@ -31,8 +38,15 @@ public class UserController : ControllerBase
  return Ok(usuario);
  }
 
+ /// <summary>
+ /// Remove um usuário pelo identificador.
+ /// </summary>
+ /// <param name="id">Identificador do usuário a ser removido</param>
+ /// <returns>204 se excluído com sucesso ou404 se não encontrado</returns>
  [HttpDelete("{id}")]
  [ProducesResponseType(StatusCodes.Status204NoContent)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> DeletarUsuario(int id)
  {
  var delete = await _usuarioService.DeleteAsync(id);
@@ -40,8 +54,18 @@ public class UserController : ControllerBase
  return NoContent();
  }
 
+ /// <summary>
+ /// Recupera todos os usuários com paginação e filtros de criação.
+ /// </summary>
+ /// <param name="page">Número da página</param>
+ /// <param name="pageSize">Tamanho da página</param>
+ /// <param name="createdFrom">Data inicial de criação</param>
+ /// <param name="createdTo">Data final de criação</param>
+ /// <returns>PagedResult de usuários</returns>
  [HttpGet]
  [ProducesResponseType(typeof(PagedResult<UserResponse>), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+ [ProducesResponseType(StatusCodes.Status500InternalServerError)]
  public async Task<ActionResult<PagedResult<UserResponse>>> GetAll([FromQuery] int page =1, [FromQuery] int pageSize =10, [FromQuery] DateTime? createdFrom = null, [FromQuery] DateTime? createdTo = null)
  {
  var response = await _usuarioService.GetAllUsersAsync(page, pageSize, createdFrom, createdTo, null);
@@ -52,16 +76,34 @@ public class UserController : ControllerBase
  return Ok(response);
  }
 
+ /// <summary>
+ /// Atualiza completamente o perfil do usuário (PUT).
+ /// </summary>
+ /// <param name="id">Identificador do usuário a ser atualizado</param>
+ /// <param name="request">Dados para atualização completa</param>
+ /// <returns>Usuário atualizado</returns>
  [HttpPut("{id}")]
  [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status400BadRequest)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> Put(int id, [FromBody] AtualizarUserRequest request)
  {
  var atualizado = await _usuarioService.AtualizarPerfilAsync(id, request);
  return Ok(atualizado);
  }
 
+ /// <summary>
+ /// Atualiza parcialmente o perfil do usuário (PATCH).
+ /// </summary>
+ /// <param name="id">Identificador do usuário a ser atualizado</param>
+ /// <param name="request">Dados para atualização do perfil</param>
+ /// <returns>Usuário atualizado</returns>
  [HttpPatch("{id}")]
  [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status400BadRequest)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> Patch(int id, [FromBody] AtualizarUserRequest request)
  {
  var atualizado = await _usuarioService.AtualizarPerfilAsync(id, request);

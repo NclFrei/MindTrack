@@ -25,14 +25,35 @@ public class TarefaController : ControllerBase
  _organizer = organizer;
  }
 
+ /// <summary>
+ /// Cria uma nova tarefa para o usuário autenticado.
+ /// </summary>
+ /// <param name="request">Dados da tarefa a ser criada</param>
+ /// <returns>Tarefa criada</returns>
  [HttpPost]
+ [ProducesResponseType(typeof(TarefaResponse), StatusCodes.Status201Created)]
+ [ProducesResponseType(StatusCodes.Status400BadRequest)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> Create([FromBody] TarefaCreateRequest request)
  {
  var result = await _service.CreateAsync(request);
  return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
  }
 
+ /// <summary>
+ /// Recupera todas as tarefas do usuário autenticado com paginação e filtros.
+ /// </summary>
+ /// <param name="page">Número da página (padrão1)</param>
+ /// <param name="pageSize">Tamanho da página (padrão10)</param>
+ /// <param name="metaId">Filtrar por meta associada</param>
+ /// <param name="userId">Filtrar por usuário</param>
+ /// <param name="prioridade">Filtrar por prioridade</param>
+ /// <param name="dificuldade">Filtrar por dificuldade</param>
+ /// <returns>PagedResult com tarefas e links HATEOAS</returns>
  [HttpGet]
+ [ProducesResponseType(typeof(PagedResult<TarefaResponse>), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+ [ProducesResponseType(StatusCodes.Status500InternalServerError)]
  public async Task<IActionResult> GetAll([FromQuery] int page =1, [FromQuery] int pageSize =10, [FromQuery] int? metaId = null, [FromQuery] int? userId = null, [FromQuery] int? prioridade = null, [FromQuery] DificuldadeEnum? dificuldade = null)
  {
  var result = await _service.GetAllAsync(page, pageSize, metaId, userId, prioridade, dificuldade);
@@ -43,7 +64,15 @@ public class TarefaController : ControllerBase
  return Ok(result);
  }
 
+ /// <summary>
+ /// Recupera uma tarefa pelo identificador.
+ /// </summary>
+ /// <param name="id">Identificador da tarefa</param>
+ /// <returns>Tarefa encontrada ou404 se não existir</returns>
  [HttpGet("{id}")]
+ [ProducesResponseType(typeof(TarefaResponse), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> GetById(int id)
  {
  var result = await _service.GetByIdAsync(id);
@@ -51,16 +80,35 @@ public class TarefaController : ControllerBase
  return Ok(result);
  }
 
+ /// <summary>
+ /// Recupera as tarefas do usuário organizadas de acordo com seu score de estresse.
+ /// </summary>
+ /// <param name="userId">Identificador do usuário</param>
+ /// <param name="stressScore">Opcional: score de estresse para ordenar (se não fornecido, usa0)</param>
+ /// <returns>Lista ordenada de tarefas</returns>
  [HttpGet("by-user/{userId}")]
+ [ProducesResponseType(typeof(List<TarefaResponse>), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> GetByUser(int userId, [FromQuery] float? stressScore = null)
  {
  var request = new OrganizeTasksRequest { UserId = userId, StressScore = stressScore ??0 };
  var ordered = await _organizer.OrganizeAsync(request);
+ if (ordered == null || !ordered.Any()) return NotFound();
  return Ok(ordered);
  }
 
+ /// <summary>
+ /// Atualiza completamente uma tarefa existente (PUT).
+ /// </summary>
+ /// <param name="id">Identificador da tarefa a ser atualizada</param>
+ /// <param name="request">Dados para atualização completa</param>
+ /// <returns>Tarefa atualizada ou404 se não existir</returns>
  [HttpPut("{id}")]
  [ProducesResponseType(typeof(TarefaResponse), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status400BadRequest)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> Update(int id, [FromBody] AtualizarTarefaRequest request)
  {
  var result = await _service.UpdateAsync(id, request);
@@ -68,8 +116,17 @@ public class TarefaController : ControllerBase
  return Ok(result);
  }
 
+ /// <summary>
+ /// Atualiza parcialmente uma tarefa existente (PATCH).
+ /// </summary>
+ /// <param name="id">Identificador da tarefa a ser atualizada</param>
+ /// <param name="request">Dados parciais para atualização</param>
+ /// <returns>Tarefa atualizada ou404 se não existir</returns>
  [HttpPatch("{id}")]
  [ProducesResponseType(typeof(TarefaResponse), StatusCodes.Status200OK)]
+ [ProducesResponseType(StatusCodes.Status400BadRequest)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> Patch(int id, [FromBody] AtualizarTarefaRequest request)
  {
  var result = await _service.UpdateAsync(id, request);
@@ -77,7 +134,15 @@ public class TarefaController : ControllerBase
  return Ok(result);
  }
 
+ /// <summary>
+ /// Remove uma tarefa existente.
+ /// </summary>
+ /// <param name="id">Identificador da tarefa a ser excluída</param>
+ /// <returns>204 se excluído com sucesso ou404 se não encontrado</returns>
  [HttpDelete("{id}")]
+ [ProducesResponseType(StatusCodes.Status204NoContent)]
+ [ProducesResponseType(StatusCodes.Status404NotFound)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> Delete(int id)
  {
  var deleted = await _service.DeleteAsync(id);

@@ -1,6 +1,7 @@
-namespace MindTrack.Domain.ML;
-
-public class TaskRankingOutput
+namespace MindTrack.Domain.ML
 {
- public float Score { get; set; }
+    public class TaskRankingOutput
+    {
+        public float Score { get; set; }
+    }
 }

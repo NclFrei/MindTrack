@@ -26,6 +26,7 @@ public class TaskOrganizerController : ControllerBase
  [HttpPost("organize")]
  [ProducesResponseType(typeof(List<TarefaResponse>), StatusCodes.Status200OK)]
  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+ [ProducesResponseType(StatusCodes.Status401Unauthorized)]
  public async Task<IActionResult> Organize([FromBody] OrganizeTasksRequest request)
  {
  if (request == null) return BadRequest();

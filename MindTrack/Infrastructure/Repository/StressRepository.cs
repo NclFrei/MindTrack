@@ -29,4 +29,12 @@ public class StressRepository : IStressRepository
     {
         return await _context.Set<StressScore>().FirstOrDefaultAsync(s => s.Id == id);
     }
+
+    public async Task<StressScore?> GetLatestByUserIdAsync(int userId)
+    {
+        return await _context.StressScores
+            .Where(s => s.UserId == userId)
+            .OrderByDescending(s => s.Timestamp) 
+            .FirstOrDefaultAsync();
+    }
 }

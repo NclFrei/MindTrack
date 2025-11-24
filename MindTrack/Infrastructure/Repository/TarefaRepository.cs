@@ -48,4 +48,12 @@ public class TarefaRepository : ITarefaRepository
          await _context.SaveChangesAsync();
          return true;
      }
+
+    public async Task<List<Tarefa>> GetByUserIdAsync(int userId)
+    {
+        return await _context.Tarefas
+            .Where(t => t.UserId == userId)
+            .ToListAsync();
+    }
+
 }
