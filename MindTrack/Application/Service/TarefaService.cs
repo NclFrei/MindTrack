@@ -12,102 +12,102 @@ namespace MindTrack.Application.Service;
 
 public class TarefaService
 {
- private readonly ITarefaRepository _repository;
- private readonly IMapper _mapper;
- private readonly IValidator<TarefaCreateRequest> _validator;
- private readonly ILogger<TarefaService> _logger;
+    private readonly ITarefaRepository _repository;
+    private readonly IMapper _mapper;
+    private readonly IValidator<TarefaCreateRequest> _validator;
+    private readonly ILogger<TarefaService> _logger;
 
- public TarefaService(ITarefaRepository repository, IMapper mapper, IValidator<TarefaCreateRequest> validator, ILogger<TarefaService>? logger = null)
- {
- _repository = repository;
- _mapper = mapper;
- _validator = validator;
- _logger = logger ?? NullLogger<TarefaService>.Instance;
- }
+    public TarefaService(ITarefaRepository repository, IMapper mapper, IValidator<TarefaCreateRequest> validator, ILogger<TarefaService>? logger = null)
+    {
+        _repository = repository;
+        _mapper = mapper;
+        _validator = validator;
+        _logger = logger ?? NullLogger<TarefaService>.Instance;
+    }
 
- public async Task<TarefaResponse> CreateAsync(TarefaCreateRequest request)
- {
- _logger.LogInformation("Criando tarefa para usuário id {UserId} título {Title}", request.UserId, request.Titulo);
- var result = await _validator.ValidateAsync(request);
- if (!result.IsValid)
- {
- var errors = result.Errors
- .Select(e => $"{e.PropertyName}: {e.ErrorMessage} ")
- .ToList();
+    public async Task<TarefaResponse> CreateAsync(TarefaCreateRequest request)
+    {
+        _logger.LogInformation("Criando tarefa para usuário id {UserId} título {Title}", request.UserId, request.Titulo);
+        var result = await _validator.ValidateAsync(request);
+        if (!result.IsValid)
+        {
+            var errors = result.Errors
+            .Select(e => $"{e.PropertyName}: {e.ErrorMessage} ")
+            .ToList();
 
- _logger.LogWarning("Validação falhou ao criar tarefa: {Errors}", string.Join(";", errors));
+            _logger.LogWarning("Validação falhou ao criar tarefa: {Errors}", string.Join(";", errors));
 
- throw new ValidationException(string.Join(Environment.NewLine, errors));
- }
- var tarefa = _mapper.Map<Tarefa>(request);
- var created = await _repository.CreateAsync(tarefa);
- _logger.LogInformation("Tarefa criada com id {TarefaId}", created?.Id);
- return _mapper.Map<TarefaResponse>(created);
- }
+            throw new ValidationException(string.Join(Environment.NewLine, errors));
+        }
+        var tarefa = _mapper.Map<Tarefa>(request);
+        var created = await _repository.CreateAsync(tarefa);
+        _logger.LogInformation("Tarefa criada com id {TarefaId}", created?.Id);
+        return _mapper.Map<TarefaResponse>(created);
+    }
 
- public async Task<PagedResult<TarefaResponse>> GetAllAsync(int page =1, int pageSize =10, int? metaId = null, int? userId = null, int? prioridade = null, DificuldadeEnum? dificuldade = null)
- {
- _logger.LogInformation("Retornando tarefas paginação: página {Page} tamanho {PageSize}", page, pageSize);
- var tarefas = await _repository.GetAllAsync();
+    public async Task<PagedResult<TarefaResponse>> GetAllAsync(int page = 1, int pageSize = 10, int? metaId = null, int? userId = null, int? prioridade = null, DificuldadeEnum? dificuldade = null)
+    {
+        _logger.LogInformation("Retornando tarefas paginação: página {Page} tamanho {PageSize}", page, pageSize);
+        var tarefas = await _repository.GetAllAsync();
 
- if (metaId.HasValue)
- tarefas = tarefas.Where(t => t.MetaId.HasValue && t.MetaId.Value == metaId.Value).ToList();
- if (userId.HasValue)
- tarefas = tarefas.Where(t => t.UserId == userId.Value).ToList();
- if (prioridade.HasValue)
- tarefas = tarefas.Where(t => t.Prioridade == prioridade.Value).ToList();
- if (dificuldade.HasValue)
- tarefas = tarefas.Where(t => t.Dificuldade == dificuldade.Value).ToList();
+        if (metaId.HasValue)
+            tarefas = tarefas.Where(t => t.MetaId.HasValue && t.MetaId.Value == metaId.Value).ToList();
+        if (userId.HasValue)
+            tarefas = tarefas.Where(t => t.UserId == userId.Value).ToList();
+        if (prioridade.HasValue)
+            tarefas = tarefas.Where(t => t.Prioridade == prioridade.Value).ToList();
+        if (dificuldade.HasValue)
+            tarefas = tarefas.Where(t => t.Dificuldade == dificuldade.Value).ToList();
 
- var total = tarefas.Count;
- var totalPages = (int)Math.Ceiling(total / (double)pageSize);
- var items = tarefas.Skip((page -1) * pageSize).Take(pageSize).ToList();
+        var total = tarefas.Count;
+        var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+        var items = tarefas.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
- var result = new PagedResult<TarefaResponse>
- {
- Items = _mapper.Map<List<TarefaResponse>>(items),
- Page = page,
- PageSize = pageSize,
- TotalCount = total,
- TotalPages = totalPages
- };
+        var result = new PagedResult<TarefaResponse>
+        {
+            Items = _mapper.Map<List<TarefaResponse>>(items),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = total,
+            TotalPages = totalPages
+        };
 
- return result;
- }
+        return result;
+    }
 
- public async Task<TarefaResponse?> GetByIdAsync(int id)
- {
- _logger.LogInformation("Obtendo tarefa por id {TarefaId}", id);
- var tarefa = await _repository.GetByIdAsync(id);
- if (tarefa == null)
- {
- _logger.LogWarning("Tarefa com id {TarefaId} não encontrada", id);
- return null;
- }
- return _mapper.Map<TarefaResponse>(tarefa);
- }
+    public async Task<TarefaResponse?> GetByIdAsync(int id)
+    {
+        _logger.LogInformation("Obtendo tarefa por id {TarefaId}", id);
+        var tarefa = await _repository.GetByIdAsync(id);
+        if (tarefa == null)
+        {
+            _logger.LogWarning("Tarefa com id {TarefaId} não encontrada", id);
+            return null;
+        }
+        return _mapper.Map<TarefaResponse>(tarefa);
+    }
 
- public async Task<TarefaResponse?> UpdateAsync(int id, AtualizarTarefaRequest request)
- {
- _logger.LogInformation("Atualizando tarefa id {TarefaId}", id);
- var existing = await _repository.GetByIdAsync(id);
- if (existing == null)
- {
- _logger.LogWarning("Falha na atualização. Tarefa id {TarefaId} não encontrada", id);
- return null;
- }
+    public async Task<TarefaResponse?> UpdateAsync(int id, AtualizarTarefaRequest request)
+    {
+        _logger.LogInformation("Atualizando tarefa id {TarefaId}", id);
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null)
+        {
+            _logger.LogWarning("Falha na atualização. Tarefa id {TarefaId} não encontrada", id);
+            return null;
+        }
 
- _mapper.Map(request, existing);
- var updated = await _repository.UpdateAsync(existing);
- _logger.LogInformation("Tarefa id {TarefaId} atualizada", id);
- return _mapper.Map<TarefaResponse>(updated);
- }
+        _mapper.Map(request, existing);
+        var updated = await _repository.UpdateAsync(existing);
+        _logger.LogInformation("Tarefa id {TarefaId} atualizada", id);
+        return _mapper.Map<TarefaResponse>(updated);
+    }
 
- public async Task<bool> DeleteAsync(int id)
- {
- _logger.LogInformation("Excluindo tarefa id {TarefaId}", id);
- var result = await _repository.DeleteAsync(id);
- _logger.LogInformation("Resultado da exclusão para tarefa id {TarefaId}: {Result}", id, result);
- return result;
- }
+    public async Task<bool> DeleteAsync(int id)
+    {
+        _logger.LogInformation("Excluindo tarefa id {TarefaId}", id);
+        var result = await _repository.DeleteAsync(id);
+        _logger.LogInformation("Resultado da exclusão para tarefa id {TarefaId}: {Result}", id, result);
+        return result;
+    }
 }

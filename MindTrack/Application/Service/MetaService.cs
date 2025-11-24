@@ -47,7 +47,7 @@ public class MetaService
         return _mapper.Map<MetaResponse>(created);
     }
 
-    public async Task<PagedResult<MetaResponse>> GetAllAsync(int page =1, int pageSize =10, bool? concluida = null, int? userId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
+    public async Task<PagedResult<MetaResponse>> GetAllAsync(int page = 1, int pageSize = 10, bool? concluida = null, int? userId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
     {
         _logger.LogInformation("Retornando metas paginação: página {Page} tamanho {PageSize}", page, pageSize);
         var metas = await _repository.GetAllAsync();
@@ -64,7 +64,7 @@ public class MetaService
 
         var total = metas.Count;
         var totalPages = (int)Math.Ceiling(total / (double)pageSize);
-        var items = metas.Skip((page -1) * pageSize).Take(pageSize).ToList();
+        var items = metas.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         var result = new PagedResult<MetaResponse>
         {
@@ -94,7 +94,8 @@ public class MetaService
     {
         _logger.LogInformation("Atualizando meta id {MetaId}", id);
         var existingArea = await _repository.GetByIdAsync(id);
-        if (existingArea == null) {
+        if (existingArea == null)
+        {
             _logger.LogWarning("Falha na atualização. Meta id {MetaId} não encontrada", id);
             return null;
         }
@@ -106,7 +107,7 @@ public class MetaService
         return _mapper.Map<MetaResponse>(updated);
     }
 
-  
+
     public async Task<bool> DeleteAsync(int id)
     {
         _logger.LogInformation("Excluindo meta id {MetaId}", id);
