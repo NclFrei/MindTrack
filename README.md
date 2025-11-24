@@ -48,14 +48,38 @@ Interface do app (mobile):
 - Health Checks
 - Middleware customizado de exceções
 
-##  Estrutura Principal
 
-- `Program.cs` — configura serviços (Auth, CORS, Swagger, Versioning, HealthChecks, Middleware etc.)
-- `Infrastructure/Data/MindTrackContext.cs` — EF Core, relacionamentos e entidades
-- `Application/Service` — regras de negócio (ex.: `AuthService`, `MetaService`)
-- `Application/Mapper` — perfis do AutoMapper
-- `Domain/Models` — entidades (`User`, `Meta`, `Tarefa`, `HeartMetric`, `StressScore`)
-- `Migrations` — histórico das migrations do EF Core
+
+## Estrutura do Projeto
+
+```text
+MindTrack.API.sln
+MindTrack.API/
+├── Application/
+│   ├── Mapper/
+│   └── Service/
+├── Controllers/
+│   ├── V1/
+│   ├── V2/
+├── Domain/
+│   ├── Dtos/
+│   ├── Enums/
+│   ├── Interfaces/
+│   ├── ML/
+│   ├── Models/
+│   └── Validator/
+├── Erros/
+├── Infrastructure/
+│   ├── Configuration/
+│   ├── Data/
+│   └── Repository/
+├── Middleware/
+├── Program.cs
+├── appsettings.json / appsettings.Development.json
+└── MindTrack.API.http
+```
+
+---
 
 ## Arquitetura
 
